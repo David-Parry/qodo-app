@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+# Allow build/libs/qodo-app.jar and mcp/*.jar for Docker image
+build/*
+!build/libs/
+build/libs/*
+!build/libs/qodo-app.jar
+.gradle/
+*.jar
+!build/libs/qodo-app.jar
+!mcp/*.jar
+*.war
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+temp/
+*.log
+*.tmp
+
+# Docker
+docker/
+
+# Documentation
+README.md
+*.md
+
+# Test files
+.qodo/
+
+# Environment files
+.env
+.env.local
+http-client.env.json
+http-client.private.env.json

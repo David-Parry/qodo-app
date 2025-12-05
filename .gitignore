@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IDE
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# OS
+**/.DS_Store
+
+# Environment
+.env
+docker/.env
+
+# MCP JAR (downloaded from Maven)
+mcp/*.jar
+
+# Notes
+notes.md
+/cleanuo.md
+.m2/

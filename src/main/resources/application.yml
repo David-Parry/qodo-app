@@ -1,0 +1,68 @@
+# Customer-Specific Configuration
+# This file contains application-specific configurations that customers can modify.
+# Framework defaults are in internal-core/src/main/resources/application-internal.yml
+# Any properties defined here will override the framework defaults.
+
+# Activate the internal profile to load framework defaults
+spring:
+  profiles:
+    active: internal
+  application:
+    name: qodo-app
+
+# Version information for banner
+application:
+  version: "@project.version@"
+
+core:
+  version: "@core.version@"
+
+
+# Jira webhook configuration
+jira:
+  webhook:
+    secret: ${JIRA_WEBHOOK_SECRET:lower-test-token-replace}
+    validate-signature: ${JIRA_WEBHOOK_VALIDATION_ENABLED:false}
+    max-timestamp-age-seconds: -1
+    # Agent blocking configuration to prevent webhook loops
+    agent:
+      account-id: ${JIRA_AGENT_ACCOUNT_ID:}
+      block-enabled: ${JIRA_BLOCK_AGENT_WEBHOOKS:true}
+
+# Messaging configuration
+messaging:
+  provider: ${MESSAGING_PROVIDER:activemq}
+  queue:
+    audit: ${MESSAGING_DEFAULT_TOPIC:audit}
+    event: ${MESSAGING_EVENT_TOPIC:event}
+    response: ${MESSAGING_RESPONSE_TOPIC:response}
+  activemq:
+    broker-url: ${MESSAGING_ACTIVEMQ_BROKER_URL:tcp://localhost:61616}
+    username: ${MESSAGING_ACTIVEMQ_USERNAME:qodo}
+    password: ${MESSAGING_ACTIVEMQ_PASSWORD:qodo}
+  local:
+    # Maximum capacity for each queue (number of messages)
+    queue-capacity: ${LOCAL_QUEUE_CAPACITY:1000}
+    # Number of consumer threads per queue (1 ensures message ordering)
+    consumer-threads: ${LOCAL_CONSUMER_THREADS:1}
+    # Maximum number of retry attempts for failed messages
+    retry-attempts: ${LOCAL_RETRY_ATTEMPTS:3}
+    # Initial delay in milliseconds before first retry
+    retry-delay-ms: ${LOCAL_RETRY_DELAY_MS:1000}
+    # Maximum delay in milliseconds between retries (with exponential backoff)
+    max-retry-delay-ms: ${LOCAL_MAX_RETRY_DELAY_MS:30000}
+    # Timeout in seconds for polling messages from the queue
+    poll-timeout-seconds: ${LOCAL_POLL_TIMEOUT_SECONDS:5}
+    # Whether to use exponential backoff for retries
+    exponential-backoff: ${LOCAL_EXPONENTIAL_BACKOFF:true}
+
+# MCP (Model Context Protocol) Configuration
+qodo:
+  mcp:
+    request-timeout-seconds: ${QODO_MCP_REQUEST_TIMEOUT_SECONDS:300}
+
+logging:
+  level:
+    ai.qodo.app.handlers.IncompleteAgentResponseHandler: TRACE
+    com.davidparry.agent.core.config.client.McpClientManager: DEBUG
+    com.davidparry.agent.core.config.MCPClientInitializer: DEBUG
