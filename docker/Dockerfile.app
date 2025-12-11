@@ -43,7 +43,7 @@ RUN git config --global push.autoSetupRemote true && \
     git config --global user.name "Agent User"
 
 # Copy the pre-built JAR from local build directory
-COPY --chown=spring:spring build/libs/command-sdk.jar /app/app.jar
+COPY --chown=spring:spring build/libs/qodo-app.jar /app/app.jar
 
 # Copy the agent.yml configuration file
 COPY --chown=spring:spring docker/agent.yml /app/agent.yml

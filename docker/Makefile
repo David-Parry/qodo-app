@@ -34,7 +34,7 @@ base: ## Build base Docker image (run rarely, ~5-10 min)
 
 app: build ## Build application image (builds JAR first, then Docker, then starts services)
 	@echo "$(BLUE)Building Docker image...$(NC)"
-	@docker build -t qodo/command-sdk:latest -f Dockerfile ..
+	@docker build -t qodo/qodo-app:latest -f Dockerfile ..
 	@echo "$(GREEN)✓ Docker image built successfully$(NC)"
 	@echo "$(BLUE)Starting services with docker-compose...$(NC)"
 	@if [ -f "../docker-compose.yml" ]; then \
@@ -62,7 +62,7 @@ fast: ## Fast build for development (recommended, ~30-60 sec)
 	@cd .. && ./gradlew clean build -x test
 	@echo "$(GREEN)✓ JAR built successfully$(NC)"
 	@echo "$(BLUE)Building Docker image...$(NC)"
-	@docker build -t qodo/command-sdk:latest -f Dockerfile ..
+	@docker build -t qodo/qodo-app:latest -f Dockerfile ..
 	@echo "$(GREEN)✓ Docker image built successfully$(NC)"
 
 rebuild: build ## Force complete rebuild (JAR + Docker no-cache + start services)
@@ -73,8 +73,8 @@ rebuild: build ## Force complete rebuild (JAR + Docker no-cache + start services
 		docker compose down 2>/dev/null || true; \
 	fi
 	@echo "$(BLUE)Removing old images...$(NC)"
-	@docker rmi -f qodo/command-sdk:latest 2>/dev/null || true
-	@docker rmi -f qodo/command-sdk:fast-dev 2>/dev/null || true
+	@docker rmi -f qodo/qodo-app:latest 2>/dev/null || true
+	@docker rmi -f qodo/qodo-app:fast-dev 2>/dev/null || true
 	@echo "$(BLUE)Clearing build cache...$(NC)"
 	@docker builder prune -af
 	@echo "$(BLUE)Force rebuilding Docker image (no cache)...$(NC)"
@@ -82,7 +82,7 @@ rebuild: build ## Force complete rebuild (JAR + Docker no-cache + start services
 		--build-arg CACHEBUST=$$(date +%s) \
 		--build-arg GITHUB_ACTOR=${GITHUB_ACTOR} \
 		--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \
-		-t qodo/command-sdk:latest \
+		-t qodo/qodo-app:latest \
 		-f Dockerfile \
 		..
 	@echo "$(GREEN)✓ Force rebuild complete$(NC)"
@@ -109,21 +109,21 @@ rebuild: build ## Force complete rebuild (JAR + Docker no-cache + start services
 
 clean: ## Clean Docker images and build cache
 	@echo "$(YELLOW)Cleaning Docker images and cache...$(NC)"
-	@docker rmi qodo/command-sdk:latest qodo/command-sdk:fast-dev 2>/dev/null || true
+	@docker rmi qodo/qodo-app:latest qodo/qodo-app:fast-dev 2>/dev/null || true
 	@docker builder prune -f
 	@echo "$(GREEN)✓ Cleanup complete$(NC)"
 
 clean-all: ## Clean everything including base image
 	@echo "$(YELLOW)Cleaning all Docker images and cache...$(NC)"
-	@docker rmi qodo/command-sdk:latest qodo/command-sdk:fast-dev qodo/command-sdk-base:latest 2>/dev/null || true
+	@docker rmi qodo/qodo-app:latest qodo/qodo-app:fast-dev qodo/qodo-app-base:latest 2>/dev/null || true
 	@docker builder prune -af
 	@echo "$(GREEN)✓ Full cleanup complete$(NC)"
 
 test: ## Test the Docker image
 	@echo "$(BLUE)Testing Docker image...$(NC)"
-	@docker run --rm qodo/command-sdk:latest java --version
-	@docker run --rm qodo/command-sdk:latest node --version
-	@docker run --rm qodo/command-sdk:latest snyk --version
+	@docker run --rm qodo/qodo-app:latest java --version
+	@docker run --rm qodo/qodo-app:latest node --version
+	@docker run --rm qodo/qodo-app:latest snyk --version
 	@echo "$(GREEN)✓ All tests passed$(NC)"
 
 run: ## Run the application with docker-compose
@@ -154,9 +154,9 @@ stop: ## Stop the application
 restart: fast ## Fast rebuild and restart (development workflow)
 	@echo "$(BLUE)Restarting application...$(NC)"
 	@if [ -f "../docker-compose.yml" ]; then \
-		cd .. && docker compose restart command-sdk; \
+		cd .. && docker compose restart qodo-app; \
 	elif [ -f "docker-compose.yml" ]; then \
-		docker compose restart command-sdk; \
+		docker compose restart qodo-app; \
 	else \
 		echo "$(YELLOW)Error: docker-compose.yml not found$(NC)"; \
 		exit 1; \
@@ -165,32 +165,32 @@ restart: fast ## Fast rebuild and restart (development workflow)
 
 logs: ## Show application logs
 	@if [ -f "../docker-compose.yml" ]; then \
-		cd .. && docker compose logs -f command-sdk; \
+		cd .. && docker compose logs -f qodo-app; \
 	elif [ -f "docker-compose.yml" ]; then \
-		docker compose logs -f command-sdk; \
+		docker compose logs -f qodo-app; \
 	else \
 		echo "$(YELLOW)Error: docker-compose.yml not found$(NC)"; \
 		exit 1; \
 	fi
 
 shell: ## Open shell in running container
-	@docker exec -it command-sdk-app /bin/bash
+	@docker exec -it qodo-app /bin/bash
 
 stats: ## Show Docker image sizes
 	@echo "$(BLUE)Docker Image Statistics:$(NC)"
 	@echo ""
-	@docker images qodo/command-sdk-base --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
-	@docker images qodo/command-sdk --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
+	@docker images qodo/qodo-app-base --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
+	@docker images qodo/qodo-app --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
 	@echo ""
 
 info: ## Show build system information
 	@echo "$(BLUE)Build System Information:$(NC)"
 	@echo ""
 	@echo "$(GREEN)Base Image:$(NC)"
-	@docker image inspect qodo/command-sdk-base:latest --format '  Size: {{.Size}} bytes ({{.VirtualSize}} virtual)' 2>/dev/null || echo "  Not built yet"
+	@docker image inspect qodo/qodo-app-base:latest --format '  Size: {{.Size}} bytes ({{.VirtualSize}} virtual)' 2>/dev/null || echo "  Not built yet"
 	@echo ""
 	@echo "$(GREEN)Application Image:$(NC)"
-	@docker image inspect qodo/command-sdk:latest --format '  Size: {{.Size}} bytes ({{.VirtualSize}} virtual)' 2>/dev/null || echo "  Not built yet"
+	@docker image inspect qodo/qodo-app:latest --format '  Size: {{.Size}} bytes ({{.VirtualSize}} virtual)' 2>/dev/null || echo "  Not built yet"
 	@echo ""
 	@echo "$(GREEN)BuildKit Status:$(NC)"
 	@docker buildx version 2>/dev/null || echo "  BuildKit not available"
@@ -217,11 +217,11 @@ version: ## Show version information
 	@echo "$(BLUE)Version Information:$(NC)"
 	@echo ""
 	@echo "$(GREEN)Java:$(NC)"
-	@docker run --rm qodo/command-sdk:latest java --version 2>/dev/null || echo "  Image not built"
+	@docker run --rm qodo/qodo-app:latest java --version 2>/dev/null || echo "  Image not built"
 	@echo ""
 	@echo "$(GREEN)Node.js:$(NC)"
-	@docker run --rm qodo/command-sdk:latest node --version 2>/dev/null || echo "  Image not built"
+	@docker run --rm qodo/qodo-app:latest node --version 2>/dev/null || echo "  Image not built"
 	@echo ""
 	@echo "$(GREEN)Snyk:$(NC)"
-	@docker run --rm qodo/command-sdk:latest snyk --version 2>/dev/null || echo "  Image not built"
+	@docker run --rm qodo/qodo-app:latest snyk --version 2>/dev/null || echo "  Image not built"
 	@echo ""

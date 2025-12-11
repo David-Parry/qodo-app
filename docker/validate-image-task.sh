@@ -4,9 +4,9 @@
 
 set -e  # Exit on error
 
-REPOSITORY_NAME="command-sdk"
-CLUSTER_NAME="command-sdk-cluster"
-SERVICE_NAME="command-sdk-service"
+REPOSITORY_NAME="qodo-app"
+CLUSTER_NAME="qodo-app-cluster"
+SERVICE_NAME="qodo-app-service"
 REGION="us-east-2"
 
 echo "=========================================="

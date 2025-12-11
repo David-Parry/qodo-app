@@ -48,7 +48,7 @@ else
 fi
 
 # Check if Spring Boot jar exists
-JAR_FILE="$PROJECT_ROOT/build/libs/command-sdk.jar"
+JAR_FILE="$PROJECT_ROOT/build/libs/qodo-app.jar"
 if [ ! -f "$JAR_FILE" ]; then
     echo "⚠️  Spring Boot jar not found at $JAR_FILE"
     echo "🔨 Building Spring Boot application..."

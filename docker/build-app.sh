@@ -6,7 +6,7 @@ set -e
 
 # Configuration
 REGISTRY=${DOCKER_REGISTRY:-""}
-APP_IMAGE_NAME="qodo/command-sdk"
+APP_IMAGE_NAME="qodo/qodo-app"
 APP_IMAGE_TAG=${APP_IMAGE_TAG:-"latest"}
 
 # Determine the correct path based on current directory
@@ -53,7 +53,7 @@ echo -e "${GREEN}✓ JAR built in ${JAR_DURATION} seconds${NC}"
 echo ""
 
 # Verify JAR exists
-JAR_PATH="$PROJECT_ROOT/build/libs/command-sdk.jar"
+JAR_PATH="$PROJECT_ROOT/build/libs/qodo-app.jar"
 if [ ! -f "$JAR_PATH" ]; then
     echo -e "${RED}ERROR: JAR not found at $JAR_PATH${NC}"
     exit 1

@@ -6,7 +6,7 @@ set -e
 
 # Configuration
 REGISTRY=${DOCKER_REGISTRY:-""}
-BASE_IMAGE_NAME="qodo/command-sdk-base"
+BASE_IMAGE_NAME="qodo/qodo-app-base"
 BASE_IMAGE_TAG=${BASE_IMAGE_TAG:-"latest"}
 
 # Determine the correct path based on current directory
