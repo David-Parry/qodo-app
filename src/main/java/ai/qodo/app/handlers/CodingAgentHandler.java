@@ -9,6 +9,7 @@
 package ai.qodo.app.handlers;
 
 import com.davidparry.agent.core.api.Handler;
+import com.davidparry.agent.core.api.StringConstants;
 import com.davidparry.agent.core.service.BaseHandler;
 import com.davidparry.agent.core.service.EndFlowCleanup;
 import com.davidparry.agent.core.service.MessagePublisher;
@@ -42,7 +43,7 @@ public class CodingAgentHandler extends BaseHandler {
         
         // Process the message (currently just pass-through)
         // The messageType field is used by the message routing system
-        map.put(com.davidparry.agent.core.service.MessagePublisher.MSG_TYPE, type());
+       // map.put(StringConstants.MESSAGE_TYPE.getValue(), type());
         
         logger.info("CodingAgentHandler completed, message ready for: {}", type());
         return map;

@@ -8,6 +8,7 @@
 
 package ai.qodo.app.handlers;
 
+import com.davidparry.agent.core.api.StringConstants;
 import com.davidparry.agent.core.service.BaseHandler;
 import com.davidparry.agent.core.service.MessagePublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +45,7 @@ public class CloudWatchAgentHandler extends BaseHandler {
         
         // Ensure the message has the correct type for routing to the next handler
         // The messageType field is used by the message routing system
-        map.put(com.davidparry.agent.core.service.MessagePublisher.MSG_TYPE, type());
+        //map.put(StringConstants.MESSAGE_TYPE.getValue(), type());
         
         logger.info("CloudWatchAgentHandler completed, message ready for: {}", type());
         return map;

@@ -9,6 +9,7 @@
 package ai.qodo.app.controllers;
 
 import ai.qodo.app.config.JiraAgentProperties;
+import com.davidparry.agent.core.api.StringConstants;
 import com.davidparry.agent.core.service.MessagePublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -21,8 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.davidparry.agent.core.service.MessagePublisher.MSG_TYPE;
 
 /**
  * Spring Boot WebMVC Controller to handle Jira webhook calls.
@@ -95,7 +94,7 @@ public class CloudWatchLogWebhookController {
 
             // Prepare message payload
             Map<String, Object> messagePayload = new HashMap<>(payload);
-            messagePayload.put(MSG_TYPE, MSG_AWS_CLOUD);
+            messagePayload.put(StringConstants.MESSAGE_TYPE.getValue(), MSG_AWS_CLOUD);
 
             // Publish message
             String msgQueue = objectMapper.writeValueAsString(messagePayload);

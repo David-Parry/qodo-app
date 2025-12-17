@@ -7,7 +7,6 @@
  */
 
 package ai.qodo.app.handlers;
-import com.davidparry.agent.core.api.Handler;
 
 import com.davidparry.agent.core.service.BaseHandler;
 import com.davidparry.agent.core.service.MessagePublisher;
