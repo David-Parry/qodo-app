@@ -76,8 +76,6 @@ public class JiraWebhookController {
     private final JiraWebhookValidator jiraWebhookValidator;
     private final JiraAgentProperties agentProperties;
 
-    @Value("${messaging.queue.event}")
-    private String eventTopic;
 
     public JiraWebhookController(JiraWebhookValidator jiraWebhookValidator, ObjectMapper objectMapper,
                                  MessagePublisher messagePublisher, JiraAgentProperties agentProperties) {
@@ -159,7 +157,7 @@ public class JiraWebhookController {
 
             // Publish message
             String msgQueue = objectMapper.writeValueAsString(messagePayload);
-            messagePublisher.publish(eventTopic, msgQueue);
+            messagePublisher.publishEvent(msgQueue);
 
             logger.info("Successfully processed Jira webhook for issue: {}", issueKey);
 

@@ -52,23 +52,10 @@ services:
       MCP_ATLASSIAN_HOST: mcp-atlassian
 
       SNYK_TOKEN: ${SNYK_TOKEN}
-      # Messaging Configuration - LOCAL QUEUE
-      MESSAGING_PROVIDER: local
-      MESSAGING_DEFAULT_TOPIC: ${MESSAGING_DEFAULT_TOPIC:-audit}
-      MESSAGING_EVENT_TOPIC: ${MESSAGING_EVENT_TOPIC:-event}
-      MESSAGING_RESPONSE_TOPIC: ${MESSAGING_RESPONSE_TOPIC:-response}
-      
       # JMS Health Check - DISABLED for local queue
       JMS_HEALTH_ENABLED: false
       
-      # Local Queue Configuration
-      LOCAL_QUEUE_CAPACITY: ${LOCAL_QUEUE_CAPACITY:-1000}
-      LOCAL_CONSUMER_THREADS: ${LOCAL_CONSUMER_THREADS:-1}
-      LOCAL_RETRY_ATTEMPTS: ${LOCAL_RETRY_ATTEMPTS:-3}
-      LOCAL_RETRY_DELAY_MS: ${LOCAL_RETRY_DELAY_MS:-1000}
-      LOCAL_MAX_RETRY_DELAY_MS: ${LOCAL_MAX_RETRY_DELAY_MS:-30000}
-      LOCAL_POLL_TIMEOUT_SECONDS: ${LOCAL_POLL_TIMEOUT_SECONDS:-5}
-      LOCAL_EXPONENTIAL_BACKOFF: ${LOCAL_EXPONENTIAL_BACKOFF:-true}
+
 
       # Git SSH Configuration
       GIT_SSH_PRIVATE_KEY: ${GIT_SSH_PRIVATE_KEY:-MISSING}
@@ -110,35 +97,10 @@ services:
     networks:
       - qodo-network
     restart: unless-stopped
-
-  # Grafana for dashboards
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_LOG_LEVEL: "error"
-    volumes:
-      - ./monitoring/grafana-provisioning/datasources:/etc/grafana/provisioning/datasources:ro
-      - ./monitoring/grafana-provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
-    tmpfs:
-      - /var/lib/grafana:size=256m
-    depends_on:
-      - prometheus
-    networks:
-      - qodo-network
-    restart: unless-stopped
-
 networks:
   qodo-network:
     driver: bridge
 
 volumes:
   prometheus_data:
-    driver: local
-  grafana_data:
     driver: local

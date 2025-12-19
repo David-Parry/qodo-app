@@ -23,3 +23,5 @@ mcp/*.jar
 notes.md
 /cleanuo.md
 .m2/
+/logs/mcp-internal.log
+/docker/out.log

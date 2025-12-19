@@ -14,7 +14,6 @@ import com.davidparry.agent.core.service.MessagePublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,9 +52,6 @@ public class CloudWatchLogWebhookController {
     private final ObjectMapper objectMapper;
     private final MessagePublisher messagePublisher;
     private final JiraWebhookValidator jiraWebhookValidator;
-
-    @Value("${messaging.queue.event}")
-    private String eventTopic;
 
     public CloudWatchLogWebhookController(JiraWebhookValidator jiraWebhookValidator, ObjectMapper objectMapper,
                                           MessagePublisher messagePublisher, JiraAgentProperties agentProperties) {
@@ -96,9 +92,9 @@ public class CloudWatchLogWebhookController {
             Map<String, Object> messagePayload = new HashMap<>(payload);
             messagePayload.put(StringConstants.MESSAGE_TYPE.getValue(), MSG_AWS_CLOUD);
 
-            // Publish message
+            // Publish message to the event queue
             String msgQueue = objectMapper.writeValueAsString(messagePayload);
-            messagePublisher.publish(eventTopic, msgQueue);
+            messagePublisher.publishEvent(msgQueue);
 
             logger.info("Successfully processed AWS Log webhook log size {}", msgQueue.length());
 
