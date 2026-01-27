@@ -29,6 +29,9 @@ jira:
       account-id: ${JIRA_AGENT_ACCOUNT_ID:}
       block-enabled: ${JIRA_BLOCK_AGENT_WEBHOOKS:true}
 
+ado:
+  webhook:
+    signature: ${ADO_PROJECT_SIGNATURE}
 
 # MCP (Model Context Protocol) Configuration
 qodo:

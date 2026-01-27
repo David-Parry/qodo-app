@@ -12,7 +12,7 @@ group = project.findProperty("group") as String? ?: "ai.qodo.app"
 version = project.findProperty("version") as String? ?: "1.0.0-SNAPSHOT"
 
 // Version properties
-val internalCoreVersion = project.findProperty("internalCoreVersion") as String? ?: "2.0.4"
+val internalCoreVersion = project.findProperty("internalCoreVersion") as String? ?: "2.1.6"
 val mcpInternalVersion = project.findProperty("mcpInternalVersion") as String? ?: "1.0.3"
 
 java {

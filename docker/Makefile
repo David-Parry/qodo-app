@@ -1,7 +1,7 @@
 # Makefile for Docker Build Optimization
 # Provides convenient shortcuts for building Docker images
 
-.PHONY: help base app fast benchmark clean test run stop logs shell
+.PHONY: help base app fast benchmark clean test run stop logs shell local-start local-stop local-logs
 
 # Default target
 .DEFAULT_GOAL := help
@@ -150,6 +150,20 @@ stop: ## Stop the application
 		exit 1; \
 	fi
 	@echo "$(GREEN)✓ Application stopped$(NC)"
+
+local-start: ## Start local environment (no ActiveMQ, in-memory queue)
+	@echo "$(BLUE)Starting local environment...$(NC)"
+	@docker compose -f docker-compose.local.yml up -d
+	@echo "$(GREEN)✓ Local environment started$(NC)"
+	@echo "$(YELLOW)Access at: http://localhost:8081$(NC)"
+
+local-stop: ## Stop local environment
+	@echo "$(YELLOW)Stopping local environment...$(NC)"
+	@docker compose -f docker-compose.local.yml down
+	@echo "$(GREEN)✓ Local environment stopped$(NC)"
+
+local-logs: ## Show local environment logs
+	@docker compose -f docker-compose.local.yml logs -f command-sdk
 
 restart: fast ## Fast rebuild and restart (development workflow)
 	@echo "$(BLUE)Restarting application...$(NC)"

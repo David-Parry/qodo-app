@@ -9,7 +9,7 @@
   "tags": [
     {
       "key": "version",
-      "value": "1.0.43"
+      "value": "1.0.45"
     }
   ],
   "runtimePlatform": {
@@ -126,6 +126,14 @@
         {
           "name": "GITHUB_API_TOKEN",
           "valueFrom": "arn:aws:secretsmanager:us-east-2:577638396504:secret:qodo-command/github-api-token-xjdT5Z"
+        },
+        {
+          "name": "GIT_ADO_SSH_PRIVATE_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:577638396504:secret:qodo/ado-git-secret-ssh-BfjoG0"
+        },
+        {
+          "name": "ADO_PROJECT_SIGNATURE",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:577638396504:secret:qodo/X-ADO-Project-Signature-weYLI3"
         }
       ],
       "logConfiguration": {

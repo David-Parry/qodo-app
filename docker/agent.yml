@@ -241,7 +241,7 @@ commands:
       *** Your Output response must conform to the configured output schema output_jira_agent ***
 
     model: "claude-4.1-opus"
-
+    next: "{/agent}"
     mcpServers: |
       {
         "mcpServers": {
@@ -1124,7 +1124,7 @@ commands:
 
       *** Your Output response must conform to the configured output schema ***
 
-    model: "claude-4.1-opus"
+    model: "claude-4.5-opus"
 
     mcpServers: |
       {
@@ -1799,6 +1799,61 @@ commands:
               }
           },
           "required": ["issueKey", "files", "success", "pr_url", "story_points", "estimated_hours","actual_agent_time_minutes","complexity_level","lines_changed","reason"]
+       }
+
+    exit_expression: "success"
+
+
+  ado_wiki_agent:
+    description: "When there is a push to a branch it looks at the push analyzes the changes and adds checks out the branch with docs updated for the change"
+
+    instructions: |
+      checkout the git repository using the ssh url give a reason for the commit and then create a branch with the docs updated for the change
+      the information about the repository is in this json {/msg}
+
+    model: "claude-4.5-sonnet"
+
+    mcpServers: |
+      {
+        "mcpServers": {
+           "internal-server": {
+              "command": "java",
+              "args": ["-jar", "/app/mcp-internal-1.0.3.jar"],
+              "env": {
+                "JIRA_MCP_ENABLED":false,
+                "GITHUB_TOKEN":"{GITHUB_API_TOKEN}",
+                "SNYK_TOKEN":"{SNYK_TOKEN}",
+                "CONFLUENCE_MCP_ENABLED":false
+              }
+          }
+        }
+      }
+
+    tools: [
+      "internal-server.git_clone_repository",
+      "internal-server.git_branch",
+      "internal-server.git_commit",
+      "internal-server.git_push",
+      "internal-server.github_create_pr",
+      "internal-server.terminal_execute_command",
+      "internal-server.get_project_tree",
+      "internal-server.get_status"
+    ]
+    execution_strategy: "act"
+
+    output_schema: |
+      {
+          "properties": {
+              "pr_url": {
+                  "description": "URL of the created Pull Request (if successful)",
+                  "type": "string"
+              },
+              "reason": {
+                  "description": "Optional field explaining why success is false, only present when success is false",
+                  "type": "string"
+              }
+          },
+          "required": ["pr_url", "reason"]
        }
 
     exit_expression: "success"

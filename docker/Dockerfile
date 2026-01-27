@@ -8,7 +8,9 @@ FROM timbru31/java-node:21-jdk-20
 WORKDIR /app
 
 # Install system dependencies (Git/GitHub tools, no Gradle/Maven)
-RUN apt-get update && \
+# Remove Yarn repository first as it has an expired GPG key and we don't need Yarn
+RUN rm -f /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     bash \
     git \
