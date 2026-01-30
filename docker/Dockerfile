@@ -19,9 +19,16 @@ RUN rm -f /etc/apt/sources.list.d/yarn.list && \
     procps \
     curl \
     ca-certificates \
-    gnupg && \
+    gnupg \
+    lsb-release && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install Azure CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# Install Azure DevOps extension
+RUN az extension add --name azure-devops
 
 # Set JAVA_HOME for timbru31/java-node image
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
@@ -73,7 +80,9 @@ RUN echo "Verifying installations..." && \
     node --version && \
     npm --version && \
     snyk --version && \
-    git --version
+    git --version && \
+    az --version && \
+    az extension list --output table
 
 # Set PATH environment variable to ensure binaries are found
 ENV PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"

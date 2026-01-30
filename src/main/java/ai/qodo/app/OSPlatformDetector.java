@@ -36,31 +36,18 @@ public class OSPlatformDetector {
             return platformName;
         }
     }
-    
+
     /**
-     * JDK information containing version and vendor details.
-     */
-    public static class JDKInfo {
-        private final String version;
-        private final String vendor;
-        private final String versionIdentifier;
-        
-        public JDKInfo(String version, String vendor, String versionIdentifier) {
-            this.version = version;
-            this.vendor = vendor;
-            this.versionIdentifier = versionIdentifier;
-        }
-        
-        public String getVersion() { return version; }
-        public String getVendor() { return vendor; }
-        public String getVersionIdentifier() { return versionIdentifier; }
-        
+         * JDK information containing version and vendor details.
+         */
+        public record JDKInfo(String version, String vendor, String versionIdentifier) {
+
         @Override
-        public String toString() {
-            return String.format("JDKInfo{version='%s', vendor='%s', versionIdentifier='%s'}", 
-                version, vendor, versionIdentifier);
+            public String toString() {
+                return String.format("JDKInfo{version='%s', vendor='%s', versionIdentifier='%s'}",
+                                     version, vendor, versionIdentifier);
+            }
         }
-    }
     
     /**
      * Detects the operating system type from JVM system properties.
@@ -113,7 +100,7 @@ public class OSPlatformDetector {
      * @return String representing the JDK version and vendor identifier
      */
     public static String getJDKVersionIdentifier() {
-        return detectJDKInfo().getVersionIdentifier();
+        return detectJDKInfo().versionIdentifier();
     }
     
     /**
@@ -122,7 +109,7 @@ public class OSPlatformDetector {
      * @return String representing the JDK version
      */
     public static String getJDKVersion() {
-        return detectJDKInfo().getVersion();
+        return detectJDKInfo().version();
     }
     
     /**
@@ -131,7 +118,7 @@ public class OSPlatformDetector {
      * @return String representing the JDK vendor
      */
     public static String getJDKVendor() {
-        return detectJDKInfo().getVendor();
+        return detectJDKInfo().vendor();
     }
     
     /**
@@ -186,39 +173,31 @@ public class OSPlatformDetector {
         return osType == OSType.LINUX || osType == OSType.MACOS || 
                osType == OSType.UNIX || osType == OSType.SOLARIS;
     }
-    
+
     /**
-     * Data class containing comprehensive OS and JDK information.
-     */
-    public static class OSInfo {
-        private final String osName;
-        private final String osVersion;
-        private final String osArch;
-        private final OSType osType;
-        private final JDKInfo jdkInfo;
-        
-        public OSInfo(String osName, String osVersion, String osArch, OSType osType, JDKInfo jdkInfo) {
-            this.osName = osName;
-            this.osVersion = osVersion;
-            this.osArch = osArch;
-            this.osType = osType;
-            this.jdkInfo = jdkInfo;
+         * Data class containing comprehensive OS and JDK information.
+         */
+        public record OSInfo(String osName, String osVersion, String osArch, OSType osType, JDKInfo jdkInfo) {
+        public String getPlatformName() {
+            return osType.getPlatformName();
         }
-        
-        public String getOsName() { return osName; }
-        public String getOsVersion() { return osVersion; }
-        public String getOsArch() { return osArch; }
-        public OSType getOsType() { return osType; }
-        public JDKInfo getJdkInfo() { return jdkInfo; }
-        public String getPlatformName() { return osType.getPlatformName(); }
-        public String getJDKVersionIdentifier() { return jdkInfo.getVersionIdentifier(); }
-        public String getJDKVersion() { return jdkInfo.getVersion(); }
-        public String getJDKVendor() { return jdkInfo.getVendor(); }
-        
+
+        public String getJDKVersionIdentifier() {
+            return jdkInfo.versionIdentifier();
+        }
+
+        public String getJDKVersion() {
+            return jdkInfo.version();
+        }
+
+        public String getJDKVendor() {
+            return jdkInfo.vendor();
+        }
+
         @Override
-        public String toString() {
-            return String.format("OSInfo{osName='%s', osVersion='%s', osArch='%s', platformName='%s', jdkVersionIdentifier='%s'}", 
-                osName, osVersion, osArch, getPlatformName(), getJDKVersionIdentifier());
+            public String toString() {
+                return String.format("OSInfo{osName='%s', osVersion='%s', osArch='%s', platformName='%s', jdkVersionIdentifier='%s'}",
+                                     osName, osVersion, osArch, getPlatformName(), getJDKVersionIdentifier());
+            }
         }
-    }
 }

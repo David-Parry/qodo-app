@@ -1,7 +1,7 @@
 # Makefile for Docker Build Optimization
 # Provides convenient shortcuts for building Docker images
 
-.PHONY: help base app fast benchmark clean test run stop logs shell local-start local-stop local-logs
+.PHONY: help base app fast benchmark clean test run stop logs shell local-start local-stop local-logs nuke deploy
 
 # Default target
 .DEFAULT_GOAL := help
@@ -238,4 +238,98 @@ version: ## Show version information
 	@echo ""
 	@echo "$(GREEN)Snyk:$(NC)"
 	@docker run --rm qodo/qodo-app:latest snyk --version 2>/dev/null || echo "  Image not built"
+	@echo ""
+
+# Nuclear cleanup - removes everything
+nuke: ## Stop all containers, remove all qodo images, and clean up completely
+	@echo "$(YELLOW)☢️  NUKE: Complete Docker cleanup starting...$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 1: Stopping all running qodo containers...$(NC)"
+	@docker ps -q --filter "name=qodo" | xargs -r docker stop 2>/dev/null || true
+	@docker ps -q --filter "ancestor=qodo/qodo-app" | xargs -r docker stop 2>/dev/null || true
+	@docker ps -q --filter "ancestor=qodo/qodo-app-base" | xargs -r docker stop 2>/dev/null || true
+	@echo "$(GREEN)✓ Containers stopped$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 2: Stopping docker-compose services...$(NC)"
+	@if [ -f "docker-compose.yml" ]; then \
+		docker compose down --remove-orphans 2>/dev/null || true; \
+	fi
+	@if [ -f "docker-compose.local.yml" ]; then \
+		docker compose -f docker-compose.local.yml down --remove-orphans 2>/dev/null || true; \
+	fi
+	@if [ -f "../docker-compose.yml" ]; then \
+		cd .. && docker compose down --remove-orphans 2>/dev/null || true; \
+	fi
+	@echo "$(GREEN)✓ Docker-compose services stopped$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 3: Removing all qodo containers (including stopped)...$(NC)"
+	@docker ps -aq --filter "name=qodo" | xargs -r docker rm -f 2>/dev/null || true
+	@docker ps -aq --filter "name=prometheus" | xargs -r docker rm -f 2>/dev/null || true
+	@docker ps -aq --filter "name=grafana" | xargs -r docker rm -f 2>/dev/null || true
+	@echo "$(GREEN)✓ Containers removed$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 4: Removing all qodo Docker images...$(NC)"
+	@docker images "qodo/qodo-app*" -q | xargs -r docker rmi -f 2>/dev/null || true
+	@docker images "qodo/qodo-app" -q | xargs -r docker rmi -f 2>/dev/null || true
+	@docker images "qodo/qodo-app-base" -q | xargs -r docker rmi -f 2>/dev/null || true
+	@docker rmi -f qodo/qodo-app:latest 2>/dev/null || true
+	@docker rmi -f qodo/qodo-app:fast-dev 2>/dev/null || true
+	@docker rmi -f qodo/qodo-app-base:latest 2>/dev/null || true
+	@echo "$(GREEN)✓ Images removed$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 5: Cleaning up dangling images and build cache...$(NC)"
+	@docker image prune -f 2>/dev/null || true
+	@docker builder prune -af 2>/dev/null || true
+	@echo "$(GREEN)✓ Build cache cleaned$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 6: Removing project volumes...$(NC)"
+	@docker volume rm -f docker_prometheus_data 2>/dev/null || true
+	@docker volume rm -f docker_grafana_data 2>/dev/null || true
+	@echo "$(GREEN)✓ Volumes removed$(NC)"
+	@echo ""
+	@echo "$(GREEN)☢️  NUKE COMPLETE: All qodo Docker resources have been removed$(NC)"
+	@echo ""
+	@echo "$(BLUE)Remaining qodo images (should be empty):$(NC)"
+	@docker images | grep -E "qodo|REPOSITORY" || echo "  None found"
+	@echo ""
+
+# AWS ECR Configuration
+ECR_REGISTRY := 577638396504.dkr.ecr.us-east-2.amazonaws.com
+ECR_REPO := command-sdk
+
+# Deploy - clean build for production/deployment
+deploy: nuke ## Nuke everything, then build a single deployable image (TAG=version)
+	@echo "$(BLUE)🚀 DEPLOY: Building production-ready Docker image...$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 1: Building JAR locally...$(NC)"
+	@cd .. && ./gradlew clean build -x test
+	@echo "$(GREEN)✓ JAR built successfully$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 2: Building single deployable Docker image...$(NC)"
+	@docker build --no-cache \
+		--build-arg CACHEBUST=$$(date +%s) \
+		-t qodo/qodo-app:$${TAG:-latest} \
+		-f Dockerfile \
+		..
+	@echo "$(GREEN)✓ Docker image built: qodo/qodo-app:$${TAG:-latest}$(NC)"
+	@echo ""
+	@echo "$(BLUE)Step 3: Tagging for AWS ECR...$(NC)"
+	@docker tag qodo/qodo-app:$${TAG:-latest} $(ECR_REGISTRY)/$(ECR_REPO):$${TAG:-latest}
+	@echo "$(GREEN)✓ Tagged as: $(ECR_REGISTRY)/$(ECR_REPO):$${TAG:-latest}$(NC)"
+	@if [ -n "$${TAG}" ] && [ "$${TAG}" != "latest" ]; then \
+		docker tag qodo/qodo-app:$${TAG} $(ECR_REGISTRY)/$(ECR_REPO):latest; \
+		echo "$(GREEN)✓ Also tagged as: $(ECR_REGISTRY)/$(ECR_REPO):latest$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(GREEN)🚀 DEPLOY COMPLETE$(NC)"
+	@echo ""
+	@echo "$(BLUE)Built images:$(NC)"
+	@docker images | grep -E "qodo/qodo-app|$(ECR_REPO)|REPOSITORY" | head -10
+	@echo ""
+	@echo "$(YELLOW)To push to AWS ECR:$(NC)"
+	@echo "  1. Login to ECR:  aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $(ECR_REGISTRY)"
+	@echo "  2. Push image:    docker push $(ECR_REGISTRY)/$(ECR_REPO):$${TAG:-latest}"
+	@echo ""
+	@echo "$(YELLOW)To run locally:$(NC)"
+	@echo "  make run"
 	@echo ""

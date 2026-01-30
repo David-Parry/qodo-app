@@ -58,6 +58,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.2")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
@@ -146,6 +147,10 @@ tasks.named("compileJava") {
 
 tasks.test {
     useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+        showStandardStreams = true
+    }
 }
 
 tasks.bootJar {

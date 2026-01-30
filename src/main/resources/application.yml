@@ -47,3 +47,4 @@ logging:
     com.davidparry.agent.core: INFO
     com.davidparry.agent.core.service: INFO
     com.davidparry.agent.core.service.BaseHandler: TRACE
+    com.davidparry.agent.core.transformer.TemplateProcessor: TRACE

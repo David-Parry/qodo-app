@@ -1,0 +1,6 @@
+# Test-specific logging configuration
+logging:
+  level:
+    root: INFO
+    com.davidparry.agent.core.transformer.TemplateProcessor: TRACE
+    com.davidparry.agent.core.transformer: TRACE

@@ -554,7 +554,7 @@ public class GitHubPrHandler extends BaseHandler {
 public class GitHubProperties {
     private String apiToken;
     private String webhookSecret;
-    private String baseUrl = "https://api.github.com";
+    private final String baseUrl = "https://api.github.com";
     
     // getters and setters
 }

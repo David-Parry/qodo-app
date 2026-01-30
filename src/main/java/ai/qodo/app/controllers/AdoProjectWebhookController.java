@@ -79,22 +79,20 @@ public class AdoProjectWebhookController {
 
 
         try {
-            // Parse the JSON payload
-            //Map<String, Object> payload = objectMapper.readValue(rawBody, Map.class);
+            // Parse the JSON payload to extract fields for template processing
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payload = objectMapper.readValue(rawBody, Map.class);
 
-
-            // Prepare message payload
-           // Map<String, Object> messagePayload = new HashMap<>(payload);
-            // just putting is all in the prompt
-            Map<String, Object> messagePayload = new HashMap<>();
-            messagePayload.put("msg", rawBody);
+            // Prepare message payload - merge the parsed payload at root level
+            // This allows template processor to resolve paths like {/resource/repository/remoteUrl}
+            Map<String, Object> messagePayload = new HashMap<>(payload);
             messagePayload.put(StringConstants.MESSAGE_TYPE.getValue(), WIKI_AGENT);
 
             // Publish message to the event queue
             String msgQueue = objectMapper.writeValueAsString(messagePayload);
             messagePublisher.publishEvent(msgQueue);
 
-            logger.info("Successfully processed AWS Log webhook log size {}", msgQueue.length());
+            logger.info("Successfully processed ADO Project webhook, message size {}", msgQueue.length());
 
         } catch (Exception e) {
             logger.error("Error processing AWS Cloudwatch log webhook", e);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Include Spring Boot's default logging configuration -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- Set TRACE level for TemplateProcessor -->
+    <logger name="com.davidparry.agent.core.transformer.TemplateProcessor" level="TRACE"/>
+    <logger name="com.davidparry.agent.core.transformer" level="TRACE"/>
+    
+    <!-- Other application-specific loggers -->
+    <logger name="ai.qodo.app.handlers.IncompleteAgentResponseHandler" level="TRACE"/>
+    <logger name="com.davidparry.agent.core.config.client.McpClientManager" level="DEBUG"/>
+    <logger name="com.davidparry.agent.core.config.MCPClientInitializer" level="DEBUG"/>
+    <logger name="com.davidparry.agent.core" level="INFO"/>
+    <logger name="com.davidparry.agent.core.service" level="INFO"/>
+    <logger name="com.davidparry.agent.core.service.BaseHandler" level="TRACE"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

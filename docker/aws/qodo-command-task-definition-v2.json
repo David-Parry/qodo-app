@@ -9,7 +9,7 @@
   "tags": [
     {
       "key": "version",
-      "value": "1.0.45"
+      "value": "1.0.46"
     }
   ],
   "runtimePlatform": {
@@ -92,6 +92,14 @@
         {
           "name": "ATLASSIAN_JIRA_URL",
           "value": "https://qodo-confluence.atlassian.net"
+        },
+        {
+          "name": "AZURE_DEVOPS_ORG",
+          "value": "https://dev.azure.com/davidp0219"
+        },
+        {
+          "name": "AZURE_DEVOPS_ORGANIZATION_URL",
+          "value": "https://dev.azure.com/davidp0219"
         }
       ],
       "secrets": [
@@ -134,6 +142,14 @@
         {
           "name": "ADO_PROJECT_SIGNATURE",
           "valueFrom": "arn:aws:secretsmanager:us-east-2:577638396504:secret:qodo/X-ADO-Project-Signature-weYLI3"
+        },
+        {
+          "name": "AZURE_DEVOPS_PAT",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:577638396504:secret:qodo/AZURE_DEVOPS_PAT-pIcp15"
+        },
+        {
+          "name": "AZURE_DEVOPS_EXT_PAT",
+          "valueFrom": "arn:aws:secretsmanager:us-east-2:577638396504:secret:qodo/AZURE_DEVOPS_PAT-pIcp15"
         }
       ],
       "logConfiguration": {
